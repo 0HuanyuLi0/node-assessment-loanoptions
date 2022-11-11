@@ -1,4 +1,4 @@
-# Task 1 - API - React
+# Task 2 - API - Node.js
 ### Description
 Create a ﬁle which when executed from the command line, prints the values based on 
 the arguments passed.
