@@ -12,27 +12,53 @@ const getData = async () => {
     }
 }
 
-
 const showResults = async () => {
-    let [category, limit, ...others] = process.argv.slice(2)
-    const { count, entries } = await getData()
-    let results = []
-    entries.every(item => {
-        if (item.Category.toUpperCase() === category.toUpperCase()) {
-            limit -= 1
-            results.push(item)
+    let args = process.argv.slice(2)
+    const argsObj = {}
+    // Assign arguments according to their type
+    args.forEach(arg => {
+        if (isNaN(parseInt(arg))) {
+            argsObj.category = arg
+        } else {
+            argsObj.limit = parseInt(arg)
         }
-        // false -> stop loop 
-        if (limit < 1) return false
-        else return true
     })
-    if (results.length < 1) {
-        console.log(`No results`)
-        return `No results`
-    } else {
-        console.log(results)
-        return results
+
+    if (argsObj.limit < 1) {
+        // input check
+        console.log(`Please enter a positive number`)
+        return
     }
+
+    const { count, entries } = await getData()
+
+    if (args.length === 0) {
+        // no arguments -> return whole data
+        console.log({ count, entries })
+        return
+    }
+
+    if (!argsObj.category) {
+        // no category argument -> return the first 'n' of data
+        console.log(entries.slice(0, argsObj.limit))
+        return
+    }
+
+    let results = entries.filter(item => item.Category.toUpperCase() === argsObj.category.toUpperCase())
+
+    if (results.length === 0) {
+        console.log(`No results`);
+        return
+    }
+
+    if (!argsObj.limit) {
+        // no limit argument -> return all data in that category
+        console.log(results);
+        return
+    }
+
+    console.log(results.slice(0, argsObj.limit));
+    return
 }
 
 showResults()
